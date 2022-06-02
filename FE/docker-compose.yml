@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+     react-frontend:
+          container_name: profile-vy-02
+          build:
+               context: .
+               dockerfile: Dockerfile
+          volumes:
+               - ".:/app"
+               - "/app/node_modules"
+          ports:
+               - "6020:80"
