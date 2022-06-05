@@ -89,8 +89,8 @@ const NavbarApp: React.FC<any> = ({ user }) => {
 				},
 				{
 					icon: "https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/e/ed63a7bd6105a2fc1d1d9ec52c7a051b.svg",
-					title: "Phiếu quà tặng",
-					href: "#",
+					title: "Voucher",
+					href: "https://voucher.votuan.xyz/partner",
 				},
 			],
 		},
