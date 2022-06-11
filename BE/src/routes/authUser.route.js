@@ -21,4 +21,6 @@ router
 
 router.post("/change-password", verifyUser, authUserController.changePassword);
 
+router.post("/update-reward", verifyUser, authUserController.updateReward);
+
 module.exports = router;

@@ -156,6 +156,18 @@ class AuthUserController {
 
 		res.Success({ message: "Change Password Successful" });
 	}
+	async updateReward(req, res, next) {
+		const { sub } = req.user;
+		const { reward } = req.body;
+
+		const user = await PARTNER.findOne({ where: { partner_id: sub } });
+
+		user.reward = reward;
+
+		user.save();
+
+		res.Success({ message: "Update Reward Successful" });
+	}
 }
 
 module.exports = new AuthUserController();
