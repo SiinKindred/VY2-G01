@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
      react-profile:
-          container_name: vy-02
+          container_name: profile-02
           build:
                context: .
                dockerfile: Dockerfile
