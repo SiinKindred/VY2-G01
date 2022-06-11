@@ -26,6 +26,11 @@ const Layout: React.FC<Props> = ({ user, fetchUser }) => {
 				}
 			);
 			const response = await req.json();
+
+			if(!response.success) {
+				localStorage.clear();
+			}
+
 			fetchUser(response.data);
 			setLoading(false);
 		}

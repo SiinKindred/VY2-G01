@@ -62,6 +62,8 @@ class AuthUserController {
 				services,
 			} = req.body;
 
+			reward = 0;
+
 			const isExisted = await PARTNER.findOne({
 				where: { username: username },
 			});
@@ -102,6 +104,7 @@ class AuthUserController {
 				message: "Đăng ký thành công",
 			});
 		} catch (e) {
+			console.log(e);
 			res.InternalServerError(e);
 		}
 	}

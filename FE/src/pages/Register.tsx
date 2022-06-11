@@ -47,6 +47,11 @@ const Register: React.FC = () => {
 			setOpenSnackbar(true);
 			return;
 		}
+		// ||  /\d{0,10}/i.test(inputs.phone)
+		if(inputs.phone.length != 10) {
+			return alert("Số điện thoại gồm 10 chữ số")
+		}
+
 		const data = { ...inputs, services: serviceChecked};
 		const req = await fetch(
 			`${process.env.REACT_APP_API_URL}/api/user/postRegister`,
