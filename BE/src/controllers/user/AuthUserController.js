@@ -1,96 +1,161 @@
-
-const {PARTNER, PARTNERSERVICE} = require('../../models');
+const { PARTNER, PARTNERSERVICE, SERVICE } = require("../../models");
 const { generateAccessToken } = require("../../utils/token");
 var md5 = require("md5");
-const {v4 : uuidv4} = require("uuid");
+const { v4: uuidv4 } = require("uuid");
 
 class AuthUserController {
-    async Test(req, res, next) {
-        const users = await PARTNERSERVICE.findAll();
-        res.send(users);
-    }
+	async Test(req, res, next) {
+		const users = await PARTNERSERVICE.findAll();
+		res.Success({ data: users });
+	}
 
+	//[POST] http://localhost:6000/api/user/postLogin
+	async postLogin(req, res, next) {
+		const { username, password } = req.body;
 
-    //[POST] http://localhost:6000/api/user/postLogin
-    async postLogin(req, res, next) {
-        console.log(req.body);
-        const { username, password } = req.body;
-        var user = await PARTNER.findOne({ username });
-        
-        if (!user) {
-            res.status(400).send({
-                success: false,
-                msg: "Tài khoản và mật khẩu không đúng"
-            });
-            return;
-        }
+		const user = await PARTNER.findOne({
+			where: { username, password: md5(password) },
+		});
 
-    
-        const passwordCrypto = md5(password);
-        console.log({passwordCrypto, p: user.password});
-        if (user.password !== passwordCrypto) {
-        
-            res.status(400).send({
-                success: false,
-                msg: "Tài khoản và mật khẩu không đúng"
-            });
-            return;
-        }
-        const token = generateAccessToken(user);
-        res.status(200).send({
-            success: true,
-            msg: "Đăng nhập thành công",
-            accessToken: token
-        })
+		if (!user)
+			return res.UnauthorizedException({
+				message: "Tài khoản và mật khẩu không đúng!",
+			});
 
-    }
+		if (user.type == "PARTNER") {
+			const partnerService = await PARTNERSERVICE.findAll({
+				where: { partner_id: user.partner_id },
+			});
 
+			user.services = await SERVICE.findAll({
+				where: {
+					service_id: partnerService.map(
+						({ service_id }) => service_id
+					),
+				},
+			});
+		}
 
-    //[POST] /api/user/register
-    async postRegister(req, res, next) {
+		const accessToken = generateAccessToken(user);
 
-        let { username, password, name, email, gender, dob, phone, address, type, reward,company_name } = req.body;
-        
-        const isUser = await PARTNER.findOne({ where: { username: username } });
-        
-        if (isUser) {
-            res.status(404).send({
-                success: false,
-                msg: "Tài khoản đã tồn tại"
-            })
-        }
-        else {
-           
-            password = md5(password);
-       
-            const newPartner = await PARTNER.create({username,password,name,email,gender,phone,address,type,reward,company_name,dob});
-            
-            const id = uuidv4();
-            console.log(req.body)
-            req.body.services.forEach(async (el)=>{
-                await PARTNERSERVICE.create({partner_id: newPartner.partner_id,service_id: el})
-            })
-            
-            res.status(200).send({
-                success: true,
-                msg: "Đăng ký thành công"
-            })
+		res.Success({
+			message: "Đăng nhập thành công",
+			data: user,
+			accessToken,
+		});
+	}
 
+	//[POST] /api/user/register
+	async postRegister(req, res, next) {
+		try {
+			let {
+				username,
+				password,
+				name,
+				email,
+				gender,
+				dob,
+				phone,
+				address,
+				reward,
+				company_name,
+				services,
+			} = req.body;
 
-        }
+			const isExisted = await PARTNER.findOne({
+				where: { username: username },
+			});
 
-    }
+			if (isExisted) {
+				return res.ConflictException({
+					message: "Tài khoản đã tồn tại",
+				});
+			}
 
-    //[GET] /api/user/getMe
-   async getMe(req,res,next)
-    {
-        const username = req.user.username;
-        const user = await PARTNER.findOne({ where: { username: username } });
-        res.status(200).json({ 
-            success : true,
-            infoUser : user
-        })
-    }
+			password = md5(password);
+
+			const type = company_name ? "PARTNER" : "USER";
+
+			const user = await PARTNER.create({
+				username,
+				password,
+				name,
+				email,
+				gender,
+				phone,
+				address,
+				type,
+				reward,
+				company_name,
+				dob,
+			});
+
+			if (user.type == "PARTNER")
+				for (const service_id of services) {
+					await PARTNERSERVICE.create({
+						partner_id: user.partner_id,
+						service_id,
+					});
+				}
+
+			res.Success({
+				message: "Đăng ký thành công",
+			});
+		} catch (e) {
+			res.InternalServerError(e);
+		}
+	}
+
+	//[GET] /api/user/me
+	async getMe(req, res, next) {
+		const username = req.user.username;
+
+		const data = await PARTNER.findOne({ where: { username: username } });
+
+		if (!data) return res.UnauthorizedException();
+
+		res.Success({ data });
+	}
+
+	async changeInfo(req, res, next) {
+		const { name, email, gender, dob, phone, address } = req.body;
+		const { sub } = req.user;
+
+		const userEntity = await PARTNER.findOne({
+			where: { partner_id: sub },
+		});
+		userEntity.name = name;
+		userEntity.email = email;
+		userEntity.gender = gender;
+		userEntity.dob = dob;
+		userEntity.phone = phone;
+		userEntity.address = address;
+
+		userEntity.save();
+
+		res.Success({ message: "Change Info Succesful" });
+	}
+
+	async changePassword(req, res, next) {
+		const { old_password, new_password } = req.body;
+		const { sub } = req.user;
+
+		console.log(old_password, new_password, req.body);
+
+		const user = await PARTNER.findOne({ where: { partner_id: sub } });
+
+		if (md5(old_password) != user.password) {
+			return res.BadRequestException({
+				message: "Old password is incorrect",
+			});
+		}
+
+		user.password = md5(new_password);
+
+		await user.save();
+
+		res.Success({ message: "Change Password Successful" });
+	}
 }
 
-module.exports = new AuthUserController()
+module.exports = new AuthUserController();

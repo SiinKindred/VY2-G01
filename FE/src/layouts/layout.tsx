@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Container } from "reactstrap";
 import NavbarApp from "../components/Navbar";
@@ -7,11 +7,12 @@ import { User } from "../model/user";
 
 interface Props {
 	user: User;
-	fetchUser: (data: User[]) => void;
+	fetchUser: (data: User) => void;
 }
 
 const Layout: React.FC<Props> = ({ user, fetchUser }) => {
 	const navigate = useNavigate();
+	const [loading, setLoading] = useState<Boolean>(true);
 
 	useEffect(() => {
 		const accessToken = localStorage.getItem("access_token");
@@ -25,15 +26,17 @@ const Layout: React.FC<Props> = ({ user, fetchUser }) => {
 				}
 			);
 			const response = await req.json();
-			fetchUser(response.infoUser);
+			fetchUser(response.data);
+			setLoading(false);
 		}
 		getUser();
 	}, [navigate, fetchUser]);
+
 	return (
 		<>
 			<NavbarApp user={user} />
 			<Container className="mt-5">
-				<Outlet />
+				{loading ? <></> : <Outlet />}
 			</Container>
 		</>
 	);

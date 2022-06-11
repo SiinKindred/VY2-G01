@@ -2,12 +2,13 @@ const tedious = require("tedious");
 const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
 
 module.exports = {
-	HOST: DB_HOST,
-	USER: DB_USER,
-	PASSWORD: DB_PASSWORD,
-	DB: DB_NAME,
+	host: DB_HOST,
+	username: DB_USER,
+	password: DB_PASSWORD,
+	database: DB_NAME,
 	dialect: "mssql",
 	dialectModule: tedious,
+	port: 1433,
 	pool: {
 		//pool configuration
 		max: 5, //maximum number of connection in pool

@@ -81,7 +81,7 @@ const CompanyInfoRegister: React.FC<any> = ({
 												/>
 											}
 											label={
-												service.service_code
+												service.service_name
 											}
 											onChange={() =>
 												handleServicesCheckBox(

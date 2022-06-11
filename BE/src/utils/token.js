@@ -1,16 +1,40 @@
 const jwt = require("jsonwebtoken");
-module.exports = {
-    generateAccessToken :  (customer) => {
+const { secret } = process.env;
 
-       // tạo ra token
-        return jwt.sign({ user_id: customer['user_id'], type: customer['type'] ,username : customer['username']}, "mySecretKey", {
-            expiresIn: "90 days"
-        });
-    
-    },
-    // //
-    generateRefreshToken : (customer) => {
-        return jwt.sign({ id: customer._id, isAdmin: customer['isAdmin'] }, "myRefreshToken");
-    
-    }
-}
+module.exports = {
+	generateAccessToken: ({
+		name,
+		username,
+		partner_id,
+		email,
+		type,
+		services,
+		company_name,
+	}) => {
+		if(services)
+    		services = services.map((e) => e.service_code);
+
+        // tạo ra token
+		return jwt.sign(
+			{
+				name: type == "PARTNER" ? company_name : name,
+				username,
+				email,
+				sub: partner_id,
+				type,
+				services,
+			},
+			secret,
+			{
+				expiresIn: "90 days",
+			}
+		);
+	},
+	// //
+	generateRefreshToken: (customer) => {
+		return jwt.sign(
+			{ id: customer._id, isAdmin: customer["isAdmin"] },
+			"myRefreshToken"
+		);
+	},
+};

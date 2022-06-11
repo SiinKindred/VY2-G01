@@ -1,4 +1,5 @@
 import { FETCH_USER } from "../constant/constant";
+import {User} from "../model/user";
 // import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -10,7 +11,7 @@ export const userReducer = (state = initialState, action: any) => {
 		case FETCH_USER:
 			return {
 				...state,
-				user: action.payload,
+				user: new User(action.payload),
 			};
 		default:
 			return { ...state };

@@ -1,20 +1,36 @@
 const { Sequelize, DataTypes } = require("sequelize");
 module.exports = function (sequelize) {
 	return sequelize.define(
-		"Service",
+		"Order",
 		{
-			service_id: {
+			order_id: {
 				type: DataTypes.UUID,
 				allowNull: false,
 				primaryKey: true,
 				defaultValue: Sequelize.UUIDV4,
 			},
-			service_name: {
+			create_at: {
+				type: DataTypes.DATE,
+				allowNull: false,
+			},
+			total: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+			},
+			reward: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+			},
+			voucherCode: {
 				type: DataTypes.STRING(255),
 				allowNull: false,
 			},
-			service_code: {
-				type: DataTypes.STRING(255),
+			user_id: {
+				type: DataTypes.UUID,
+				allowNull: false,
+			},
+			partner_id: {
+				type: DataTypes.UUID,
 				allowNull: false,
 			},
 		},

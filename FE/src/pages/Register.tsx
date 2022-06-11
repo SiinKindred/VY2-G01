@@ -34,14 +34,6 @@ const Register: React.FC = () => {
 		setInputs((values) => ({ ...values, [name]: value }));
 	};
 
-	const isAdmin = function (): string {
-		if (companyChecked) {
-			return "ADMIN";
-		} else {
-			return "USER";
-		}
-	};
-
 	async function onRegisterSubmit(e: any) {
 		if (
 			inputs.address === "" ||
@@ -55,8 +47,7 @@ const Register: React.FC = () => {
 			setOpenSnackbar(true);
 			return;
 		}
-		const type = isAdmin();
-		const data = { ...inputs, services: serviceChecked, type };
+		const data = { ...inputs, services: serviceChecked};
 		const req = await fetch(
 			`${process.env.REACT_APP_API_URL}/api/user/postRegister`,
 			{

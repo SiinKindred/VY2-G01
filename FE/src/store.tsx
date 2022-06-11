@@ -4,4 +4,7 @@ import rootReducer from './reducers';
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
+// @ts-ignore
+window.store = store;
+
 export default store;

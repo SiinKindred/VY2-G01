@@ -19,6 +19,8 @@ import { ReactComponent as Icon2 } from "../assets/icons/icon2.svg";
 import { ReactComponent as Icon3 } from "../assets/icons/icon3.svg";
 
 const NavbarApp: React.FC<any> = ({ user }) => {
+	// const {REACT_APP_VOUCHER_SERVICE} = process.env;
+	const REACT_APP_VOUCHER_SERVICE = "https://voucher.votuan.xyz";
 	const navigate = useNavigate();
 	const [isOpen, setIsOpen] = useState(false);
 	const toggle = () => setIsOpen(!isOpen);
@@ -90,7 +92,9 @@ const NavbarApp: React.FC<any> = ({ user }) => {
 				{
 					icon: "https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/e/ed63a7bd6105a2fc1d1d9ec52c7a051b.svg",
 					title: "Voucher",
-					href: "https://voucher.votuan.xyz/partner",
+					href: `${REACT_APP_VOUCHER_SERVICE}${user && user.type == "PARTNER" ? "/partner/auth" : "/user/home"}?appId=vy02&token=${localStorage.getItem("access_token")}`,
+				
+					// href: "abc"
 				},
 			],
 		},
@@ -128,7 +132,7 @@ const NavbarApp: React.FC<any> = ({ user }) => {
 									</NavItem>
 									<NavItem>
 										<Link
-											to="/"
+											to="/register"
 											className="nav-link"
 										>
 											<img
