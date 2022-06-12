@@ -11,7 +11,7 @@ interface UserLoginDTO {
 const Login: React.FC = () => {
 	const navigate = useNavigate();
 	const [searchParams, setSearchParams] = useSearchParams();
-	const urlRedirect = searchParams.get("callback");
+	const urlRedirect = searchParams.get("redirect");
 
 	useEffect(() => {
 		const checkLogin = localStorage.getItem("access_token");
@@ -56,9 +56,9 @@ const Login: React.FC = () => {
 		);
 		const response = await req.json();
 		if (response.success) {
-			localStorage.setItem("access_token", response.accessToken);
+			localStorage.setItem("token", response.accessToken);
 			const url = urlRedirect
-				? urlRedirect + "?access_token=" + response.accessToken
+				? urlRedirect + "?token=" + response.accessToken
 				: "/";
 			window.location.href = url;
 		} else {
