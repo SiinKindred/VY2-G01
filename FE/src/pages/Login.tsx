@@ -56,7 +56,7 @@ const Login: React.FC = () => {
 		);
 		const response = await req.json();
 		if (response.success) {
-			localStorage.setItem("token", response.accessToken);
+			localStorage.setItem("access_token", response.accessToken);
 			const url = urlRedirect
 				? urlRedirect + "?token=" + response.accessToken
 				: "/";
